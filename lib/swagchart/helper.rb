@@ -55,11 +55,11 @@ HTML
       [cols, *rows]
     end
 
-    # This finds and replaces some string represantations of
+    # This finds and replaces some string representations of
     # Ruby objects to their JavaScript equivalents.
-    # Yes it's a bit dirty and using refinements to replace the
+    # Yes it's dirty and using Ruby 2.x refinements to replace the
     # to_s methods of those objects only in this module would
-    # be just awesome, but refinements dont work in Ruby 1.x.
+    # be simply awesome, but refinements dont work in Ruby 1.x.
     # TODO: Check if refinements are available and do either the
     #       right or the dirty thing.
     def ruby_to_js_conversions(str)
