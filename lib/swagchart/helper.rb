@@ -10,14 +10,16 @@ module Swagchart
       @chart_counter ||= 0
       type = type.to_s
       type = type.camelize if type.respond_to?(:camelize)
+      data = data.to_a if data.is_a?(Hash)
       if data.respond_to?(:first) && data.first.is_a?(Hash)
         data = hash_array_to_data_table(data)
         opts.delete(:columns)
       elsif data.respond_to?(:unshift) && data.respond_to?(:first)
         if opts[:columns]
           data.unshift opts.delete(:columns)
-        elsif data.first.find{|e| !e.is_a?(String) && !e.is_a?(Symbol) }
-          # Do nothing. This should already be in a DataTable format.
+        elsif !data.first.find{|e| !e.is_a?(String) && !e.is_a?(Symbol) }
+          # Do nothing! This should already be in a DataTable format.
+          # First row seems to only define column names.
         else
           data.unshift Array.new(data.first.size, '')
         end
