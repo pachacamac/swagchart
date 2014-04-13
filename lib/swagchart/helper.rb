@@ -67,9 +67,10 @@ HTML
     #       right or the dirty thing.
     def ruby_to_js_conversions(str)
       drx = /#<Date: (\d\d\d\d)-(\d\d)-(\d\d).*?>/
+      dtrx= /#<DateTime: (\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)\+\d\d:\d\d .*?>/
       trx = /(\d\d\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d) \+\d\d\d\d/
       blk = ->(s){v=$~.captures.map(&:to_i); v[1]-=1; "new Date(#{v.join(',')})"}
-      str.to_s.gsub(trx, &blk).gsub(drx, &blk)
+      str.to_s.gsub(dtrx, &blk).gsub(drx, &blk).gsub(trx, &blk)
     end
 
   end

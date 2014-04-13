@@ -25,6 +25,12 @@ class TestSwagchart < Minitest::Test
     assert raw_chart.include?('new Date(2014,11,31)')
   end
 
+  def test_datetime_object_literals
+    dt = Time.parse('2014-12-24 13:37:04').to_datetime
+    raw_chart = chart(:line_chart, [[dt, 42]], columns: ['x', 'y'])
+    assert raw_chart.include?('new Date(2014,11,24,13,37,4)')
+  end
+
   # def test_chart_output
   #   puts chart('GeoMap', [{'Country'=>'Germany', 'Population'=>8600000}, {'Country'=>'France', 'Population'=>6500000}], columns: ['x', 'y'], :hAxis => {title: 'Year'}, style:'width:100%;')
   #   puts chart(:line_chart, [[23, 42], [666, 999]], columns: ['x', 'y'])
