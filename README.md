@@ -2,7 +2,7 @@
 
 Get your swag on with this incredibly easy to use wrapper around [Googles Chart API](https://developers.google.com/chart/).
 
-In case you haven't noticed, Swagchart is just an acronym for **S**imple **W**rapper **A**round **G**oogle **Charts**.
+In case you haven't noticed, Swagchart is just an acronym for **S**.imple **W**.rapper **A**.round **G**.oogle **Chart**.
 
 Swagchart is highly inspired by [Chartkick](https://github.com/ankane/chartkick) but making use of Googles new ChartWrapper class which allows a more flexible and direct interaction.
 
@@ -24,7 +24,9 @@ Pie chart
 <%= chart 'PieChart', Goal.group(:name).count %>
 ```
 
-:thought_balloon: ... Note to self: Include more examples ... also keep in mind that capitalize is only available in Rails
+Keep in mind that camelize is only available with activesupport. Use the camelized chart names ... i.e. "LineChart" instead of "line_chart"
+
+:thought_balloon: ... Note to self: Include more examples ... 
 
 
 
