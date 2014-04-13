@@ -10,6 +10,7 @@ module Swagchart
       @chart_counter ||= 0
       type = type.to_s
       type = type.camelize if type.respond_to?(:camelize)
+      opts[:columns] = opts[:columns].split(',').map(&:strip) if opts[:columns].is_a?(String)
       data = data.to_a if data.is_a?(Hash)
       if data.respond_to?(:first) && data.first.is_a?(Hash)
         data = hash_array_to_data_table(data)
