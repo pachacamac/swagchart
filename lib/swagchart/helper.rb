@@ -31,22 +31,10 @@ module Swagchart
       style << ERB::Util.html_escape(opts.delete(:style)) if opts[:style]
       html = ''
       unless @google_visualization_included #we only need to include this once
-        html << "<script type='text/javascript'>google.load('visualization','1');</script>\n"
+        html << jsapi_includes_template
         @google_visualization_included = true
       end
-      html << <<HTML
-<div id='#{chart_id}' style='#{style}'>Loading...</div>
-<script type='text/javascript'>
-  google.setOnLoadCallback(function(){
-    new google.visualization.ChartWrapper({
-      chartType: '#{type}',
-      containerId: '#{chart_id}',
-      options: #{opts.to_json},
-      dataTable: #{ruby_to_js_conversions(data)}
-    }).draw();
-  });
-</script>
-HTML
+      html << classic_template(id: chart_id, type: type, style: style, options: opts, data: data)
       html.respond_to?(:html_safe) ? html.html_safe : html
     end
 
@@ -66,12 +54,54 @@ HTML
     # TODO: Check if refinements are available and do either the
     #       right or the dirty thing.
     def ruby_to_js_conversions(str)
-      drx = /#<Date: (\d\d\d\d)-(\d\d)-(\d\d).*?>/
-      dtrx= /#<DateTime: (\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)\+\d\d:\d\d .*?>/
-      trx = /(\d\d\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d) \+\d\d\d\d/
-      blk = ->(s){v=$~.captures.map(&:to_i); v[1]-=1; "new Date(#{v.join(',')})"}
-      str.to_s.gsub(dtrx, &blk).gsub(drx, &blk).gsub(trx, &blk)
+      str.to_s.gsub(/["'](\d\d\d\d-\d\d-\d\d.*?)["']/){"new Date(Date.parse('#{$1}'))"}
+      #drx = /#<Date: (\d\d\d\d)-(\d\d)-(\d\d).*?>/
+      #dtrx= /#<DateTime: (\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)\+\d\d:\d\d .*?>/
+      #trx = /(\d\d\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d) \+\d\d\d\d/
+      #blk = ->(s){v=$~.captures.map(&:to_i); v[1]-=1; "new Date(#{v.join(',')})"}
+      #str.to_s.gsub(dtrx, &blk).gsub(drx, &blk).gsub(trx, &blk)
     end
 
+    def classic_template(opts={})
+<<HTML
+<div id='#{opts[:id]}' style='#{opts[:style]}'>Loading...</div>
+<script type='text/javascript'>
+google.setOnLoadCallback(function(){
+  new google.visualization.#{opts[:type]}(document.getElementById('#{opts[:id]}')).draw(
+    google.visualization.arrayToDataTable(
+      #{ruby_to_js_conversions(opts[:data])}
+    ), #{opts[:options].to_json});
+});
+</script>
+HTML
+    end
+
+    def chartwrapper_template(opts={})
+<<HTML
+<div id='#{opts[:id]}' style='#{opts[:style]}'>Loading...</div>
+<script type='text/javascript'>
+  google.setOnLoadCallback(function(){
+    new google.visualization.ChartWrapper({
+      chartType: '#{opts[:type]}',
+      containerId: '#{opts[:id]}',
+      options: #{opts[:options].to_json},
+      dataTable: #{ruby_to_js_conversions(opts[:data])}
+    }).draw();
+  });
+</script>
+HTML
+    end
+
+    def jsapi_includes_template
+<<HTML
+<script type='text/javascript'>
+  google.load('visualization','1');
+  google.load('visualization', '1', {packages: [
+    'corechart','geomap', 'geochart', 'map', 'treemap', 'annotatedtimeline',
+    'sankey', 'orgchart', 'calendar', 'gauge'
+  ]});
+</script>
+HTML
+    end
   end
 end
