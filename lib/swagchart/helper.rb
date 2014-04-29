@@ -8,8 +8,7 @@ module Swagchart
     def chart(type, data, opts={}, &block)
       @google_visualization_included ||= false
       @chart_counter ||= 0
-      type = type.to_s
-      type = type.camelize if type.respond_to?(:camelize)
+      type = camelize(type.to_s)
       opts[:columns] = opts[:columns].split(',').map(&:strip) if opts[:columns].is_a?(String)
       data = data.to_a if data.is_a?(Hash)
       if data.respond_to?(:first) && data.first.is_a?(Hash)
@@ -25,16 +24,16 @@ module Swagchart
           data.unshift Array.new(data.first.size, '')
         end
       end
-      opts.delete(:columns)
       chart_id = ERB::Util.html_escape(opts.delete(:chart_id) || "chart_#{@chart_counter += 1}")
-      style = 'height:300px;' #dirty hack right here .. you can override that with your style though
+      style = 'height:320px;' #dirty hack right here .. you can override that with your style though
       style << ERB::Util.html_escape(opts.delete(:style)) if opts[:style]
       html = ''
       unless @google_visualization_included #we only need to include this once
         html << jsapi_includes_template
         @google_visualization_included = true
       end
-      html << classic_template(id: chart_id, type: type, style: style, options: opts, data: data)
+      options = opts.delete(:options) || {}
+      html << classic_template(id: chart_id, type: type, style: style, options: options, data: data)
       html.respond_to?(:html_safe) ? html.html_safe : html
     end
 
@@ -46,6 +45,10 @@ module Swagchart
       [cols, *rows]
     end
 
+    def camelize(str)
+      str.split('_').each(&:capitalize!).join('')
+    end
+
     # This finds and replaces some string representations of
     # Ruby objects to their JavaScript equivalents.
     # Yes it's dirty and using Ruby 2.x refinements to replace the
@@ -55,6 +58,7 @@ module Swagchart
     #       right or the dirty thing.
     def ruby_to_js_conversions(str)
       str.to_s.gsub(/["'](\d\d\d\d-\d\d-\d\d.*?)["']/){"new Date(Date.parse('#{$1}'))"}
+              .gsub(/\bnil\b/, 'null')
       #drx = /#<Date: (\d\d\d\d)-(\d\d)-(\d\d).*?>/
       #dtrx= /#<DateTime: (\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)\+\d\d:\d\d .*?>/
       #trx = /(\d\d\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d) \+\d\d\d\d/
@@ -97,7 +101,7 @@ HTML
 <script type='text/javascript'>
   google.load('visualization','1');
   google.load('visualization', '1', {packages: [
-    'corechart','geomap', 'geochart', 'map', 'treemap', 'annotatedtimeline',
+    'corechart', 'geochart', 'map', 'treemap', 'annotatedtimeline',
     'sankey', 'orgchart', 'calendar', 'gauge'
   ]});
 </script>
