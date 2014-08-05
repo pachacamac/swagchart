@@ -1,5 +1,7 @@
 # Swagchart
 
+[![Gem Version](https://badge.fury.io/rb/swagchart.svg)](http://badge.fury.io/rb/swagchart) ![Installs](http://img.shields.io/gem/dt/swagchart.svg)
+
 Get your swag on with this incredibly easy to use wrapper around [Googles Chart API](https://developers.google.com/chart/).
 
 In case you haven't noticed, Swagchart is just an acronym for **S**.imple **W**.rapper **A**.round **G**.oogle **Chart**.
