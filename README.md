@@ -1,10 +1,12 @@
 # Swagchart
 
+[![Gem Version](https://badge.fury.io/rb/swagchart.svg)](http://badge.fury.io/rb/swagchart) ![Installs](http://img.shields.io/gem/dt/swagchart.svg)
+
 Get your swag on with this incredibly easy to use wrapper around [Googles Chart API](https://developers.google.com/chart/).
 
 In case you haven't noticed, Swagchart is just an acronym for **S**.imple **W**.rapper **A**.round **G**.oogle **Chart**.
 
-Swagchart is highly inspired by [Chartkick](https://github.com/ankane/chartkick) but making use of Googles new ChartWrapper class which allows a more flexible and direct interaction.
+Swagchart is highly inspired by [Chartkick](https://github.com/ankane/chartkick) ~~but making use of Googles new ChartWrapper class which allows a more flexible and direct interaction.~~ (the code is still in there and you can enable it if you want to .. look at lib/swagchart/helper.rb .. but unfortunately ChartWrapper doesn't allow many charts so I switched back to the classic approach by default).
 
 You can still create beautiful Javascript charts with one line of Ruby. In fact now you can pretty much use all the fancy chart types from [Googles Chart API](https://developers.google.com/chart/interactive/docs/gallery).
 
@@ -24,7 +26,7 @@ Pie chart
 <%= chart 'PieChart', Goal.group(:name).count %>
 ```
 
-~~Keep in mind that camelize is only available with activesupport. Use the camelized chart names ... i.e. "LineChart" instead of "line_chart"~~
+~~Keep in mind that camelize is only available with activesupport. Use the camelized chart names ... i.e. "LineChart" instead of "line_chart"~~ (This is included now so don't worry about it)
 
 :thought_balloon: ... Note to self: Include more examples ...
 
