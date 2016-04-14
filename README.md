@@ -26,7 +26,7 @@ Pie chart
 
 ~~Keep in mind that camelize is only available with activesupport. Use the camelized chart names ... i.e. "LineChart" instead of "line_chart"~~
 
-:thought_balloon: ... Note to self: Include more examples ... 
+:thought_balloon: ... Note to self: Include more examples ...
 
 
 
@@ -49,7 +49,19 @@ Pass data as a Array, Hash or "DataTable"
 Multiple series just work automatically
 
 ```erb
-<%= chart :line_chart [[1,2,4],[2,3,8],[3,4,16],[4,5,32]], columns: ['x', 'Series 1', 'Series 2'] %>
+<%= chart :line_chart, [[1,2,4],[2,3,8],[3,4,16],[4,5,32]], columns: ['x', 'Series 1', 'Series 2'] %>
+```
+
+No need to define columns if you don't want to
+
+```erb
+<%= chart :line_chart, [[1,2,4],[2,3,8],[3,4,16],[4,5,32]] %>
+```
+
+:sparkles: Now brand new: Instead of actual data you can just provide an URL from where the data will be retrieved via an Ajax Get request
+
+```erb
+<%= chart :line_chart, '/api/line-chart-data' %>
 ```
 
 If you want to use times or dates, do so. They have to be a time or date object!
