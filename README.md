@@ -26,12 +26,6 @@ Pie chart
 <%= chart 'PieChart', Goal.group(:name).count %>
 ```
 
-~~Keep in mind that camelize is only available with activesupport. Use the camelized chart names ... i.e. "LineChart" instead of "line_chart"~~ (This is included now so don't worry about it)
-
-:thought_balloon: ... Note to self: Include more examples ...
-
-
-
 ### Data
 
 Pass data as a Array, Hash or "DataTable"
