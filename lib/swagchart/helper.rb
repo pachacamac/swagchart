@@ -1,6 +1,7 @@
 require 'json'
 require 'time'
 require 'erb'
+require 'securerandom'
 
 module Swagchart
   module Helper
@@ -13,7 +14,6 @@ module Swagchart
       opts[:options] ||= {}
       opts[:options] = (@default_chart_options || {}).merge(opts[:options])
       @google_visualization_included ||= false
-      @chart_counter ||= 0
       type = camelize(type.to_s)
       opts[:columns] = opts[:columns].split(',').map(&:strip) if opts[:columns].is_a?(String)
       data = data.to_a if data.is_a?(Hash)
@@ -23,7 +23,7 @@ module Swagchart
       elsif data.respond_to?(:unshift) && data.respond_to?(:first) && opts[:columns]
         data.unshift opts.delete(:columns)
       end
-      chart_id = ERB::Util.html_escape(opts.delete(:chart_id) || "chart_#{@chart_counter += 1}")
+      chart_id = ERB::Util.html_escape(opts.delete(:chart_id) || "chart_#{SecureRandom.uuid}")
       style = 'height:320px;' #dirty hack right here .. you can override that with your style though
       style << ERB::Util.html_escape(opts.delete(:style)) if opts[:style]
       html = ''
@@ -49,11 +49,13 @@ module Swagchart
     end
 
     def autocast_data_template
-      js =  "for(var i=0;i<data.length;i++){for(var j=0;j<data[i].length;j++){if(typeof data[i][j] === 'string'){"
-      js << 'if(data[i][j].match(/\d\d\d\d-\d\d-\d\d.*?/)){data[i][j] = new Date(Date.parse(data[i][j]));}'
-      js << "else if(data[i][j] == 'nil'){data[i][j] = null;}"
+      js = ''
+      js << 'if(Array.isArray(data) && !Array.isArray(data[0])){'
+      js << 'var keys=[], vals=[], row=[]; for(var k in data[0]){keys.push(k)}; for(var d in data){row=[]; for(var k in keys){row.push(data[d][keys[k]])}; vals.push(row)}; vals.unshift(keys); data = vals;'
+      js << '}else{data.unshift(Array(data[0].length).join(".").split("."));}'
+      js << "for(var i=0;i<data.length;i++){for(var j=0;j<data[i].length;j++){if(typeof data[i][j] === 'string'){"
+      js << 'var pd = Date.parse(data[i][j]); if(!isNaN(pd)){data[i][j] = new Date(pd)};'
       js << "}}};"
-      js << "data.unshift(Array(data[0].length).join('.').split('.'));"
       js
     end
 
