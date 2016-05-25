@@ -14,60 +14,22 @@ Works with Rails, Sinatra and most browsers (including IE 6).
 
 ## Usage examples
 
-Line chart
-
-```erb
-<%= chart :line_chart, User.group_by_day(:created_at).count %>
-```
-
-Pie chart
-
-```erb
-<%= chart 'PieChart', Goal.group(:name).count %>
-```
-
-### Data
-
-Pass data as a Array, Hash or "DataTable"
-
-```erb
-<%= chart :pie_chart, [["Football", 10], ["Basketball", 5]] %>
-```
-
-```erb
-<%= chart :pie_chart, {"Football" => 10, "Basketball" => 5} %>
-```
-
-```erb
-<%= chart :pie_chart, [["Sport", "Popularity"], ["Football", 10], ["Basketball", 5]] %>
-```
-
-Multiple series just work automatically
-
-```erb
-<%= chart :line_chart, [[1,2,4],[2,3,8],[3,4,16],[4,5,32]], columns: ['x', 'Series 1', 'Series 2'] %>
-```
-
-No need to define columns if you don't want to
-
-```erb
-<%= chart :line_chart, [[1,2,4],[2,3,8],[3,4,16],[4,5,32]] %>
-```
-
-:sparkles: Now brand new: Instead of actual data you can just provide an URL from where the data will be retrieved via an Ajax Get request
-
-```erb
-<%= chart :line_chart, '/api/line-chart-data' %>
-```
-
-If you want to use times or dates, do so. They have to be a time or date object!
-
-
-```erb
-<%= line_chart({20.day.ago => 5, Time.at(1368174456) => 4, Time.parse("2013-05-07 00:00:00 UTC") => 7, Date.new(1999,12,24) => 9}) %>
+```ruby
+chart :line_chart, [{y: 23, x: 42}, {y: 666, x: 999}]
+chart :line_chart, [[23, 42], [666, 999]], columns: ['x', 'y']
+chart :line_chart, [[23, 42], [666, 999]], columns: ['x', 'y'], style: 'width:100%;'
+chart :line_chart, [[1,2,4],[2,3,8],[3,4,16],[4,5,32]]
+chart :line_chart, User.group_by_day(:created_at).count
+chart :bar_chart, [['x', 'y'],[23, 42], [666, 999]]
+chart :pie_chart, Goal.group(:name).count
+chart :geo_map, [{'Country'=>'Germany', 'Population'=>8600000}, {'Country'=>'France', 'Population'=>6500000}]
+chart :line_chart,
+      [[0, nil, nil, 5], [1, 'foo', 'Foobar', 2], [2, nil, nil, 6], [3, 'bar', 'Barfoo', 3], [4, nil, nil, 8]],
+      columns: ['y', {type: 'string', role: 'annotation'}, {type: 'string', role: 'annotationText'}, 'foo'],
+      options: {annotations: {style: 'line'}}
+chart :pie_chart, '/api/pie-chart-data'
 
 ```
-
 
 ## Installation
 
