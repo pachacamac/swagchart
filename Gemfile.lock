@@ -1,13 +1,13 @@
 PATH
   remote: .
   specs:
-    swagchart (1.0.0)
+    swagchart (1.1.2)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    minitest (5.3.2)
-    rake (10.2.2)
+    minitest (5.9.0)
+    rake (11.1.2)
 
 PLATFORMS
   ruby
@@ -17,3 +17,6 @@ DEPENDENCIES
   minitest
   rake
   swagchart!
+
+BUNDLED WITH
+   1.11.2
