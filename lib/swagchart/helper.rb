@@ -19,7 +19,7 @@ module Swagchart
       data = data.to_a if data.is_a?(Hash)
       if opts[:columns]
         opts[:columns] = opts[:columns].split(',').map(&:strip) if opts[:columns].is_a?(String)
-        data.unshift opts[:columns]
+        data.unshift opts[:columns] unless data.is_a?(String)
       end
       chart_id = ERB::Util.html_escape(opts.delete(:chart_id) || "chart_#{SecureRandom.uuid}")
       style = 'height:320px;' # dirty hack right here .. you can override that with your style though
@@ -40,16 +40,14 @@ module Swagchart
       str.split('_').each(&:capitalize!).join('')
     end
 
-    def autocast_data_template(opts = {})
-      js = ''
-      js << 'if(Array.isArray(data) && !Array.isArray(data[0])){'
-      js << 'var keys=[], vals=[], row=[]; for(var k in data[0]){keys.push(k)}; for(var d in data){row=[]; for(var k in keys){row.push(data[d][keys[k]])}; vals.push(row)}; vals.unshift(keys); data = vals;'
-      js << '}'
-      js << 'else{data.unshift(Array(data[0].length).join(".").split("."));}' unless opts[:columns]
-      js << "for(var i=0;i<data.length;i++){for(var j=0;j<data[i].length;j++){if(typeof data[i][j] === 'string'){"
-      js << 'var pd = Date.parse(data[i][j]); if(!isNaN(pd)){data[i][j] = new Date(pd)};'
-      js << '}}};console.log(data);'
-      js
+    def jsapi_includes_template
+      html =  "<script type='text/javascript'>"
+      html << "google.load('visualization', '1');"
+      html << "google.load('visualization', '1', {packages: ["
+      html << "'corechart', 'geochart', 'map', 'treemap', 'annotatedtimeline','sankey', 'orgchart', 'calendar', 'gauge', 'timeline'"
+      html << ']});'
+      html << '</script>'
+      html
     end
 
     def chart_template(opts = {})
@@ -82,14 +80,17 @@ module Swagchart
       js
     end
 
-    def jsapi_includes_template
-      html =  "<script type='text/javascript'>"
-      html << "google.load('visualization', '1');"
-      html << "google.load('visualization', '1', {packages: ["
-      html << "'corechart', 'geochart', 'map', 'treemap', 'annotatedtimeline','sankey', 'orgchart', 'calendar', 'gauge', 'timeline'"
-      html << ']});'
-      html << '</script>'
-      html
+    def autocast_data_template(opts = {})
+      js = ''
+      js << 'if(Array.isArray(data) && !Array.isArray(data[0])){'
+      js << 'var keys=[], vals=[], row=[]; for(var k in data[0]){keys.push(k)}; for(var d in data){row=[]; for(var k in keys){row.push(data[d][keys[k]])}; vals.push(row)}; vals.unshift(keys); data = vals;'
+      js << '}'
+      js << 'else{data.unshift(Array(data[0].length).join(".").split("."));}' unless opts[:columns]
+      js << "data.unshift(#{opts[:columns].to_json});" if opts[:columns]
+      js << "for(var i=0;i<data.length;i++){for(var j=0;j<data[i].length;j++){if(typeof data[i][j] === 'string'){"
+      js << 'var pd = Date.parse(data[i][j]); if(!isNaN(pd)){data[i][j] = new Date(pd)};'
+      js << '}}};'
+      js
     end
   end
 end
